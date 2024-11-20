@@ -1,12 +1,14 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Button } from 'react-native';
 
 export default function HomeScreen() {
+  const handlePress = () => {
+    alert('Button pressed!');
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the Simple Screen!</Text>
-      <Text>
-        This is a simplified version of the Home Screen.
-      </Text>
+      <Text style={styles.title}>سخافة</Text>
+      <Button title="سخف عليا" onPress={handlePress} color="green" />
     </View>
   );
 }
@@ -16,7 +18,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#A1CEDC', // Light background color
+    backgroundColor: 'orange', 
   },
   title: {
     fontSize: 24,
