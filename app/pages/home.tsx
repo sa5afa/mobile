@@ -1,7 +1,8 @@
-import { StyleSheet, View, Text, Button, Alert } from 'react-native';
+import { StyleSheet, View, Text, Alert, TouchableOpacity, Linking } from 'react-native';
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
-import JokeDetails, { JokeProps } from '@/components/Joke'; // Import the Joke component
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import JokeDetails, { JokeProps } from '@/components/Joke';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function HomeScreen() {
   const [joke, setJoke] = useState<JokeProps | null>(null);
@@ -14,10 +15,9 @@ export default function HomeScreen() {
       const fetchTime = await AsyncStorage.getItem('fetchTime');
 
       const currentTime = new Date().getTime();
-      const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      const twentyFourHours = 24 * 60 * 60 * 1000;
 
       if (fetchTime && (currentTime - parseInt(fetchTime)) > twentyFourHours) {
-        // Clear storage if more than 24 hours have passed
         await AsyncStorage.removeItem('joke');
         await AsyncStorage.removeItem('jokeFetchedToday');
         await AsyncStorage.removeItem('fetchTime');
@@ -36,26 +36,29 @@ export default function HomeScreen() {
 
   const fetchjoke = async () => {
     if (jokeFetchedToday) {
-      Alert.alert('Info', 'لقد حصلت على نكتة اليوم بالفعل. حاول مرة أخرى غداً.');
+      Alert.alert('معلومة', 'لقد حصلت على نكتة اليوم بالفعل. حاول مرة أخرى غداً.');
       return;
     }
 
     try {
-      const response = await fetch('https://raw.githubusercontent.com/sa5afa/api/refs/heads/main/jokes.json'); // Replace with your actual API URL
+      const response = await fetch('https://raw.githubusercontent.com/sa5afa/api/refs/heads/main/jokes.json');
       const data = await response.json();
       const randomIndex = Math.floor(Math.random() * data.length);
       const randomJoke = data[randomIndex];
-      setJoke(randomJoke); // Set joke to state
-      setJokeFetchedToday(true); // Mark that a joke has been fetched today
+      setJoke(randomJoke);
+      setJokeFetchedToday(true);
 
-      // Store the joke, the fetched status, and the fetch time in AsyncStorage
       await AsyncStorage.setItem('joke', JSON.stringify(randomJoke));
       await AsyncStorage.setItem('jokeFetchedToday', JSON.stringify(true));
       await AsyncStorage.setItem('fetchTime', new Date().getTime().toString());
     } catch (error) {
       console.error('Error fetching joke:', error);
-      Alert.alert('Error', 'حدث خطأ، حاول مرة أخرى لاحقاً.');
+      Alert.alert('خطأ', 'حدث خطأ، حاول مرة أخرى لاحقاً.');
     }
+  };
+
+  const openLink = () => {
+    Linking.openURL('https://adambashaahmednaji.com/');
   };
 
   return (
@@ -64,7 +67,20 @@ export default function HomeScreen() {
       {joke && (
         <JokeDetails author={joke.author} joke={joke.joke} categories={joke.categories} />
       )}
-      <Button title="سخف عليا" onPress={fetchjoke} color="green" />
+      <View style={styles.buttonContainer}>
+        <MaterialIcons.Button
+          name="mood"
+          backgroundColor="#4CAF50"
+          onPress={fetchjoke}
+        >
+          سخف عليا
+        </MaterialIcons.Button>
+      </View>
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={openLink}>
+          <Text style={styles.footerText}>تم الإنشاء بواسطة آدم باشا</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -74,10 +90,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'orange', 
+    backgroundColor: '#FFEB3B',
+    padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 10,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 16,
+    color: '#333',
+    textDecorationLine: 'underline',
   },
 });

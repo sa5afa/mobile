@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons'; // Import Expo's icon library
 
 export interface JokeProps {
     author: string;
@@ -10,9 +11,15 @@ export interface JokeProps {
 const JokeDetails = ({ author, joke, categories }: JokeProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.author}>المؤلف: {author}</Text>
-      <Text style={styles.joke}>النكتة: {joke}</Text>
-      <Text style={styles.categories}>الفئات: {categories.join(', ')}</Text>
+      <Text style={styles.author}>
+        <MaterialIcons name="person" size={20} color="#333" /> المؤلف: {author}
+      </Text>
+      <Text style={styles.joke}>
+        <MaterialIcons name="insert-emoticon" size={20} color="#555" /> النكتة: {joke}
+      </Text>
+      <Text style={styles.categories}>
+        <MaterialIcons name="category" size={20} color="#888" /> الفئات: {categories.join(', ')}
+      </Text>
     </View>
   );
 };
@@ -20,7 +27,7 @@ const JokeDetails = ({ author, joke, categories }: JokeProps) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#FFF9C4',
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: {
@@ -33,21 +40,21 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderWidth: 1,
     borderColor: '#e0e0e0',
-    alignItems: 'flex-end', // Align text to the right
+    alignItems: 'flex-end',
   },
   author: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
   },
   joke: {
-    fontSize: 18,
+    fontSize: 20,
     marginVertical: 10,
     fontStyle: 'italic',
     color: '#555',
   },
   categories: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#888',
     marginTop: 5,
   },
