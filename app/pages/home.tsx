@@ -1,12 +1,15 @@
-import { StyleSheet, View, Text, Alert, TouchableOpacity, Linking } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Linking } from 'react-native';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import JokeDetails, { JokeProps } from '@/components/Joke';
 import { MaterialIcons } from '@expo/vector-icons';
+import Modal from 'react-native-modal';
 
 export default function HomeScreen() {
   const [joke, setJoke] = useState<JokeProps | null>(null);
   const [jokeFetchedToday, setJokeFetchedToday] = useState<boolean>(false);
+  const [isModalVisible, setModalVisible] = useState<boolean>(false);
+  const [modalMessage, setModalMessage] = useState<string>('');
 
   useEffect(() => {
     const loadJoke = async () => {
@@ -36,7 +39,8 @@ export default function HomeScreen() {
 
   const fetchjoke = async () => {
     if (jokeFetchedToday) {
-      Alert.alert('معلومة', 'لقد حصلت على نكتة اليوم بالفعل. حاول مرة أخرى غداً.');
+      setModalMessage('لقد حصلت على نكتة اليوم بالفعل. حاول مرة أخرى غداً.');
+      setModalVisible(true);
       return;
     }
 
@@ -53,7 +57,8 @@ export default function HomeScreen() {
       await AsyncStorage.setItem('fetchTime', new Date().getTime().toString());
     } catch (error) {
       console.error('Error fetching joke:', error);
-      Alert.alert('خطأ', 'حدث خطأ، حاول مرة أخرى لاحقاً.');
+      setModalMessage('حدث خطأ، حاول مرة أخرى لاحقاً.');
+      setModalVisible(true);
     }
   };
 
@@ -81,6 +86,15 @@ export default function HomeScreen() {
           <Text style={styles.footerText}>تم الإنشاء بواسطة آدم باشا</Text>
         </TouchableOpacity>
       </View>
+
+      <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>{modalMessage}</Text>
+          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>إغلاق</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -113,5 +127,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     textDecorationLine: 'underline',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
